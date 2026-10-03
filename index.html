@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZKMEER Developers & Learning System - Registration</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Firebase SDKs (Modular v10) -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        // TODO: Apni Firebase Console wali details yahan replace karein
+       // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyBOn6FPlIijOKDEInVHfOIQd_EwLeXcLng",
+  authDomain: "zkmeer-developers-4fddf.firebaseapp.com",
+  projectId: "zkmeer-developers-4fddf",
+  storageBucket: "zkmeer-developers-4fddf.firebasestorage.app",
+  messagingSenderId: "493854034836",
+  appId: "1:493854034836:web:7498096fee75c887399d81",
+  measurementId: "G-W8RH73VNQ2"
+};
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Global functions ko window par attach karna taake HTML elements access kar sakein
+        window.db = db;
+        window.collection = collection;
+        window.addDoc = addDoc;
+        window.getDocs = getDocs;
+        window.doc = doc;
+        window.updateDoc = updateDoc;
+        window.deleteDoc = deleteDoc;
+        window.onSnapshot = onSnapshot;
+    </script>
+
+    <style>
+        /* A4 Print Layout Configuration */
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            #letterSection, #letterSection * {
+                visibility: visible;
+            }
+            #letterSection {
+                position: fixed;
+                left: 0;
+                top: 0;
+                width: 210mm;
+                min-height: 297mm;
+                padding: 20mm;
+                margin: 0;
+                box-shadow: none !important;
+                border: none !important;
+                border-radius: 0 !important;
+                background: white !important;
+                z-index: 9999;
+            }
+            .no-print {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+<body class="bg-slate-100 font-sans text-slate-800">
+
+    <!-- Header / Navbar -->
+    <header class="bg-slate-900 text-white shadow-lg border-b border-slate-800 no-print">
+        <div class="max-w-4xl mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center font-bold text-lg text-white shadow">ZK</div>
+                <div>
+                    <h1 class="text-base font-bold tracking-wide">ZKMEER Developers</h1>
+                    <p class="text-xs text-slate-400">& Learning System</p>
+                </div>
+            </div>
+            <button onclick="openAdminLogin()" class="bg-indigo-600 hover:bg-indigo-700 text-xs px-4 py-2 rounded-lg transition font-medium shadow">Admin Portal</button>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-2xl mx-auto px-4 py-8">
+        
+        <!-- Step 1: Registration Form Card -->
+        <div id="formSection" class="bg-white shadow-xl rounded-2xl p-6 md:p-8 border border-slate-200">
+            <div class="text-center mb-6">
+                <span class="bg-indigo-50 text-indigo-700 text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider">Web Development & Learning System</span>
+                <h2 class="text-2xl font-bold text-slate-900 mt-2">Student Registration</h2>
+                <p class="text-sm text-slate-500 mt-1">Provide your professional and educational details below.</p>
+            </div>
+
+            <form id="registrationForm" onsubmit="proceedToPayment(event)" class="space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Full Name *</label>
+                        <input type="text" id="fullName" required class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Father's Name *</label>
+                        <input type="text" id="fatherName" required class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">CNIC / B-Form Number *</label>
+                        <input type="text" id="cnic" required class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">WhatsApp Number *</label>
+                        <input type="tel" id="phone" required class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Email Address *</label>
+                        <input type="email" id="email" required class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">City / Region *</label>
+                        <input type="text" id="city" required class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Qualification *</label>
+                        <select id="qualification" required class="w-full px-3 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm bg-white">
+                            <option value="">Select</option>
+                            <option value="Matric">Matric</option>
+                            <option value="Intermediate">Intermediate</option>
+                            <option value="Bachelor">Bachelor</option>
+                            <option value="Master">Master</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Has Laptop/PC? *</label>
+                        <select id="laptopStatus" required class="w-full px-3 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm bg-white">
+                            <option value="">Select</option>
+                            <option value="Yes">Yes, I have</option>
+                            <option value="No">No, I don't</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Experience *</label>
+                        <select id="experience" required class="w-full px-3 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm bg-white">
+                            <option value="Absolute Beginner">Absolute Beginner</option>
+                            <option value="Basic HTML/CSS">Basic Knowledge</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Passport Size Picture *</label>
+                    <input type="file" id="studentPic" accept="image/*" required class="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
+                </div>
+
+                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 rounded-lg transition shadow-md mt-4 text-sm">
+                    Next: Proceed to Fee Payment →
+                </button>
+            </form>
+        </div>
+
+        <!-- Step 2: QR Code Payment Section -->
+        <div id="paymentSection" class="hidden bg-white shadow-xl rounded-2xl p-6 md:p-8 border border-slate-200">
+            <div class="text-center mb-6">
+                <span class="bg-amber-50 text-amber-700 text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider">Step 2 of 2: Registration Fee</span>
+                <h3 class="text-2xl font-bold text-slate-900 mt-2">Scan & Pay Fee</h3>
+                <p class="text-sm text-slate-500 mt-1">Scan the QR code below via EasyPaisa, JazzCash or Bank App to pay processing fee.</p>
+            </div>
+
+            <div class="bg-slate-50 p-6 rounded-xl border border-slate-200 text-center mb-6">
+                <div class="w-44 h-44 bg-white mx-auto p-2 border rounded-lg shadow-sm flex items-center justify-center">
+                    <img src="zain.jpeg" alt="Payment QR Code" class="w-full h-full object-contain">
+                </div>
+                <div class="mt-4 text-xs font-medium text-slate-600">
+                    <p class="font-bold text-slate-800">Account Title: ZENALABDEN Shop</p>
+                    <p class="text-slate-500 mt-0.5">EasyPaisa / JazzCash: 98330652</p>
+                </div>
+            </div>
+
+            <form onsubmit="submitFinalRegistration(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Transaction ID / TID *</label>
+                    <input type="text" id="transactionId" required class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm" placeholder="Enter Transaction ID from SMS">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Upload Payment Screenshot *</label>
+                    <input type="file" id="paymentScreenshot" accept="image/*" required class="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
+                </div>
+                <div class="flex space-x-3">
+                    <button type="button" onclick="backToForm()" class="w-1/3 bg-slate-200 hover:bg-slate-300 text-slate-700 text-sm font-semibold py-3 rounded-lg transition">Back</button>
+                    <button type="submit" id="submitBtn" class="w-2/3 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold py-3 rounded-lg transition shadow-md">Submit Application</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Success Status Card -->
+        <div id="successCard" class="hidden bg-white shadow-xl rounded-2xl p-8 text-center border border-slate-200">
+            <div class="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl font-bold">✓</div>
+            <h3 class="text-2xl font-bold text-slate-900 mb-2">Application Submitted!</h3>
+            <p class="text-slate-600 mb-6 text-sm">Your details & payment proof have been sent to <strong>ZKMEER Developers</strong> admin team. Once verified, your Admission Letter will be issued here.</p>
+            <button onclick="location.reload()" class="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold px-6 py-2.5 rounded-lg transition">Back to Home</button>
+        </div>
+
+        <!-- Admin Dashboard Section -->
+        <div id="adminSection" class="hidden bg-white shadow-xl rounded-2xl p-6 md:p-8 border border-slate-200">
+            <div class="flex justify-between items-center mb-6 border-b pb-4">
+                <div>
+                    <h3 class="text-lg font-bold text-slate-900">Admin Portal - ZKMEER System (Live Cloud)</h3>
+                    <p class="text-xs text-slate-500">Manage student registrations and verify payments in real-time.</p>
+                </div>
+                <button onclick="logoutAdmin()" class="bg-rose-500 hover:bg-rose-600 text-white text-xs px-3 py-1.5 rounded-lg transition font-medium">Logout</button>
+            </div>
+
+            <!-- Students Table -->
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse text-xs">
+                    <thead>
+                        <tr class="bg-slate-100 text-slate-700">
+                            <th class="p-2.5">Student</th>
+                            <th class="p-2.5">Contact / City</th>
+                            <th class="p-2.5">Tech Info</th>
+                            <th class="p-2.5">Payment</th>
+                            <th class="p-2.5">Status</th>
+                            <th class="p-2.5 text-right">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="studentsTableBody">
+                        <!-- Data loaded via Firebase Realtime Listener -->
+                    </tbody>
+                </table>
+            </div>
+            <div id="noDataMsg" class="text-center py-6 text-slate-400 text-xs hidden">No applications found in cloud database.</div>
+        </div>
+
+        <!-- A4 Admission Letter View -->
+        <div id="letterSection" class="hidden bg-white shadow-2xl rounded-2xl p-10 border border-slate-300 max-w-3xl mx-auto relative overflow-hidden">
+            <div class="absolute inset-0 flex items-center justify-center opacity-[0.03] pointer-events-none select-none">
+                <h1 class="text-6xl font-black uppercase tracking-widest text-center rotate-[-30deg]">ZKMEER DEVELOPERS</h1>
+            </div>
+
+            <div class="border-b-2 border-indigo-600 pb-6 mb-8 flex justify-between items-center">
+                <div>
+                    <h2 class="text-2xl font-black text-indigo-600 uppercase tracking-wide">ZKMEER Developers</h2>
+                    <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">& Learning System — Official Academy</p>
+                </div>
+                <div class="text-right">
+                    <p class="text-xs font-bold text-slate-700">Ref No: ZK/ADM/2026</p>
+                    <p class="text-xs text-slate-500" id="letterDate"></p>
+                </div>
+            </div>
+
+            <div class="text-center mb-8">
+                <h3 class="text-xl font-bold uppercase text-slate-900 tracking-wider underline decoration-indigo-500 underline-offset-8">Certificate of Admission</h3>
+                <p class="text-xs text-slate-500 mt-2">Free Web Development Training Program (2026 Cohort)</p>
+            </div>
+
+            <div class="flex items-center justify-between bg-slate-50 p-6 rounded-2xl border border-slate-200 mb-8">
+                <div class="space-y-1.5 text-sm">
+                    <p class="text-slate-700"><strong>Student Name:</strong> <span id="letterName" class="font-bold text-slate-900"></span></p>
+                    <p class="text-slate-700"><strong>Father's Name:</strong> <span id="letterFather"></span></p>
+                    <p class="text-slate-700"><strong>CNIC / B-Form:</strong> <span id="letterCnic"></span></p>
+                    <p class="text-slate-700"><strong>City / Region:</strong> <span id="letterCity"></span></p>
+                </div>
+                <div>
+                    <img id="letterPic" src="" class="w-28 h-28 object-cover rounded-xl border-4 border-white shadow-md">
+                </div>
+            </div>
+
+            <div class="text-sm text-slate-700 space-y-4 mb-10 leading-relaxed">
+                <p>Dear Student,</p>
+                <p>We are pleased to formally inform you that your application and registration fee verification for the <strong>Free Web Development Training Program</strong> at <strong>ZKMEER Developers & Learning System</strong> has been successfully approved by the management committee.</p>
+                <p>You are now officially enrolled in our upcoming batch. Ensure your regular attendance and active participation in all training modules, coding assignments, and live mentorship sessions.</p>
+                <p class="text-xs text-slate-500 mt-4"><em>Note: This is a computer-generated official document and does not require a physical signature, but is validated by the institute's system records.</em></p>
+            </div>
+
+            <div class="flex justify-between items-end pt-8 border-t border-slate-200 mt-12">
+                <div>
+                    <p class="text-xs font-bold text-slate-800">ZKMEER Developers Learning System</p>
+                    <p class="text-[10px] text-slate-500">Official Web Dev Academy</p>
+                </div>
+                <div class="text-center">
+                    <div class="border-b border-slate-400 w-40 mb-1"></div>
+                    <p class="text-xs font-bold text-slate-700">Authorized Signature</p>
+                </div>
+            </div>
+
+            <div class="flex space-x-4 no-print mt-10 pt-6 border-t">
+                <button onclick="window.print()" class="w-full bg-slate-900 hover:bg-black text-white text-xs font-semibold py-3 rounded-xl transition shadow">Print / Save A4 PDF</button>
+                <button onclick="location.reload()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold py-3 rounded-xl transition shadow">Close / Back</button>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Image Preview Modal -->
+    <div id="imageModal" class="hidden fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4">
+        <div class="bg-white p-4 rounded-2xl max-w-md w-full relative text-center">
+            <button onclick="closeImageModal()" class="absolute top-2 right-3 text-slate-500 hover:text-black text-xl font-bold">&times;</button>
+            <h4 id="modalTitle" class="text-sm font-bold text-slate-800 mb-2">Image Preview</h4>
+            <img id="modalImgSrc" src="" class="max-h-[70vh] mx-auto rounded-lg border object-contain">
+        </div>
+    </div>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        const ADMIN_PASS = "zkmeer123";
+        let temporaryStudentData = {};
+        let unsubscribeLiveStudents = null;
+
+        function proceedToPayment(event) {
+            event.preventDefault();
+            
+            const fullName = document.getElementById('fullName').value;
+            const fatherName = document.getElementById('fatherName').value;
+            const cnic = document.getElementById('cnic').value;
+            const phone = document.getElementById('phone').value;
+            const email = document.getElementById('email').value;
+            const city = document.getElementById('city').value;
+            const qualification = document.getElementById('qualification').value;
+            const laptopStatus = document.getElementById('laptopStatus').value;
+            const experience = document.getElementById('experience').value;
+            const picInput = document.getElementById('studentPic');
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                temporaryStudentData = {
+                    fullName, fatherName, cnic, phone, email, city,
+                    qualification, laptopStatus, experience,
+                    image: e.target.result
+                };
+
+                document.getElementById('formSection').classList.add('hidden');
+                document.getElementById('paymentSection').classList.remove('hidden');
+            };
+            reader.readAsDataURL(picInput.files[0]);
+        }
+
+        function backToForm() {
+            document.getElementById('paymentSection').classList.add('hidden');
+            document.getElementById('formSection').classList.remove('hidden');
+        }
+
+        async function submitFinalRegistration(event) {
+            event.preventDefault();
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.innerText = "Submitting to Cloud...";
+            submitBtn.disabled = true;
+
+            const transactionId = document.getElementById('transactionId').value;
+            const slipInput = document.getElementById('paymentScreenshot');
+
+            const reader = new FileReader();
+            reader.onload = async function(e) {
+                try {
+                    const finalRecord = {
+                        ...temporaryStudentData,
+                        transactionId,
+                        slipImage: e.target.result,
+                        status: 'Pending',
+                        createdAt: new Date().toISOString(),
+                        date: new Date().toLocaleDateString()
+                    };
+
+                    // Firebase Firestore mein data save karna
+                    await window.addDoc(window.collection(window.db, "students"), finalRecord);
+
+                    document.getElementById('paymentSection').classList.add('hidden');
+                    document.getElementById('successCard').classList.remove('hidden');
+                } catch (error) {
+                    alert("Error submitting data: " + error.message);
+                    submitBtn.innerText = "Submit Application";
+                    submitBtn.disabled = false;
+                }
+            };
+            reader.readAsDataURL(slipInput.files[0]);
+        }
+
+        function openAdminLogin() {
+            let pass = prompt("Enter Admin Password:");
+            if (pass === ADMIN_PASS) {
+                document.getElementById('formSection').classList.add('hidden');
+                document.getElementById('paymentSection').classList.add('hidden');
+                document.getElementById('successCard').classList.add('hidden');
+                document.getElementById('adminSection').classList.remove('hidden');
+                startLiveStudentsSync();
+            } else if (pass !== null) {
+                alert("Incorrect Password!");
+            }
+        }
+
+        // Firebase Real-time Listener (Live update for Admin Panel)
+        function startLiveStudentsSync() {
+            const q = window.collection(window.db, "students");
+            
+            unsubscribeLiveStudents = window.onSnapshot(q, (snapshot) => {
+                let tbody = document.getElementById('studentsTableBody');
+                let noDataMsg = document.getElementById('noDataMsg');
+                tbody.innerHTML = "";
+
+                if (snapshot.empty) {
+                    noDataMsg.classList.remove('hidden');
+                    return;
+                } else {
+                    noDataMsg.classList.add('hidden');
+                }
+
+                snapshot.forEach((docSnapshot) => {
+                    let student = { id: docSnapshot.id, ...docSnapshot.data() };
+                    
+                    let statusBadge = student.status === 'Approved' 
+                        ? `<span class="bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded font-bold">Approved</span>`
+                        : `<span class="bg-amber-50 text-amber-700 px-2 py-0.5 rounded font-bold">Pending</span>`;
+
+                    let row = `<tr class="border-b border-slate-100 hover:bg-slate-50">
+                        <td class="p-2.5 flex items-center space-x-2">
+                            <img src="${student.image}" class="w-8 h-8 object-cover rounded-full border cursor-pointer" onclick="openImageModal('${student.image}', 'Student Picture: ${student.fullName}')">
+                            <div>
+                                <div class="font-bold text-slate-800">${student.fullName}</div>
+                                <div class="text-[10px] text-slate-500">S/O ${student.fatherName}</div>
+                            </div>
+                        </td>
+                        <td class="p-2.5">
+                            <div class="font-medium">${student.phone}</div>
+                            <div class="text-[10px] text-slate-500">${student.city}</div>
+                        </td>
+                        <td class="p-2.5">
+                            <div class="text-[11px] font-semibold text-slate-700">Laptop: ${student.laptopStatus}</div>
+                            <div class="text-[10px] text-slate-500">${student.experience}</div>
+                        </td>
+                        <td class="p-2.5">
+                            <div class="text-[11px] font-semibold text-indigo-600">TID: ${student.transactionId}</div>
+                            <button onclick="openImageModal('${student.slipImage}', 'Payment Receipt: ${student.fullName}')" class="text-[10px] text-blue-600 underline font-medium">View Slip</button>
+                        </td>
+                        <td class="p-2.5">${statusBadge}</td>
+                        <td class="p-2.5 text-right space-x-1">
+                            ${student.status === 'Pending' 
+                                ? `<button onclick="approveStudent('${student.id}')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-2 py-1 rounded text-[10px] font-semibold">Approve</button>`
+                                : `<button onclick="viewLetter('${student.id}')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-2 py-1 rounded text-[10px] font-semibold">Letter</button>`
+                            }
+                            <button onclick="deleteStudent('${student.id}')" class="text-rose-500 hover:text-rose-700 px-1 py-1 text-[10px]">Del</button>
+                        </td>
+                    </tr>`;
+                    tbody.innerHTML += row;
+                });
+            });
+        }
+
+        function openImageModal(src, title = "Preview") {
+            document.getElementById('modalImgSrc').src = src;
+            document.getElementById('modalTitle').innerText = title;
+            document.getElementById('imageModal').classList.remove('hidden');
+        }
+
+        function closeImageModal() {
+            document.getElementById('imageModal').classList.add('hidden');
+        }
+
+        async function approveStudent(id) {
+            try {
+                const studentRef = window.doc(window.db, "students", id);
+                await window.updateDoc(studentRef, { status: 'Approved' });
+            } catch (error) {
+                alert("Error updating status: " + error.message);
+            }
+        }
+
+        async function viewLetter(id) {
+            try {
+                const querySnapshot = await window.getDocs(window.collection(window.db, "students"));
+                let student = null;
+                querySnapshot.forEach((doc) => {
+                    if (doc.id === id) {
+                        student = { id: doc.id, ...doc.data() };
+                    }
+                });
+
+                if(student) {
+                    document.getElementById('adminSection').classList.add('hidden');
+                    document.getElementById('letterSection').classList.remove('hidden');
+                    document.getElementById('letterPic').src = student.image;
+                    document.getElementById('letterName').innerText = student.fullName;
+                    document.getElementById('letterFather').innerText = student.fatherName;
+                    document.getElementById('letterCnic').innerText = student.cnic;
+                    document.getElementById('letterCity').innerText = student.city;
+                    document.getElementById('letterDate').innerText = "Date: " + (student.date || new Date().toLocaleDateString());
+                }
+            } catch (error) {
+                alert("Error loading letter: " + error.message);
+            }
+        }
+
+        async function deleteStudent(id) {
+            if (confirm("Delete this record from cloud database?")) {
+                try {
+                    await window.deleteDoc(window.doc(window.db, "students", id));
+                } catch (error) {
+                    alert("Error deleting record: " + error.message);
+                }
+            }
+        }
+
+        function logoutAdmin() {
+            if(unsubscribeLiveStudents) unsubscribeLiveStudents(); // stop real-time listener on logout
+            document.getElementById('adminSection').classList.add('hidden');
+            document.getElementById('formSection').classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
